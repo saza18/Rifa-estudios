@@ -66,6 +66,27 @@
             margin: 0 auto;
         }
 
+        /* --- ANIMACIÓN Y ESTILO PARA EL LETRERO ROJO PALPITANTE --- */
+        @keyframes pulseAlert {
+            0% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.35; transform: scale(0.98); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+
+        .letrero-palpitante {
+            color: #EF4444;
+            font-weight: 800;
+            font-size: 1.05rem;
+            text-align: center;
+            margin: 12px 0;
+            padding: 8px;
+            border: 1.5px dashed #EF4444;
+            border-radius: 8px;
+            background-color: rgba(239, 68, 68, 0.08);
+            animation: pulseAlert 1.5s infinite ease-in-out;
+            letter-spacing: 0.5px;
+        }
+
         .btn-dark-mode {
             position: absolute;
             top: 20px;
@@ -588,6 +609,10 @@
                     <p>Valor del puesto: <strong>$<span id="portalValor">20.000</span> COP</strong></p>
                     <p style="margin-top: 8px; border-top: 1px dashed var(--border); padding-top: 8px;">🎰 Juega con: <strong id="portalLoteria" style="color: var(--highlight-text);">Lotería de Medellín</strong></p>
                     <p>📅 Fecha del sorteo: <strong id="portalFecha" style="color: var(--highlight-text);">Por definir</strong></p>
+                    
+                    <div class="letrero-palpitante">
+                        ⚠️ BOLETA NO PAGADA, NO JUEGA
+                    </div>
                 </div>
 
                 <p style="color: var(--text-muted); font-size: 0.95rem;">Selecciona tu opción de ingreso:</p>
@@ -744,7 +769,7 @@
             </div>
         </div>
 
-        <!-- --- NUEVO: MODAL PARA CAMBIO DE USUARIO Y CONTRASEÑA --- -->
+        <!-- --- MODAL PARA CAMBIO DE USUARIO Y CONTRASEÑA --- -->
         <div class="modal-login" id="modalCredenciales">
             <div class="modal-content" style="max-width: 400px;">
                 <h3 style="color: var(--highlight-text); text-align: center; margin-bottom: 15px;">🔒 Cambiar Credenciales de Acceso</h3>
@@ -763,6 +788,25 @@
             </div>
         </div>
 
+        <!-- --- NUEVO: MODAL DE CONFIRMACIÓN DE TRANSFERENCIA NEQUI --- -->
+        <div class="modal-login" id="modalNequi">
+            <div class="modal-content" style="max-width: 450px; text-align: center;">
+                <h3 style="color: var(--highlight-text); margin-bottom: 10px;">📲 Confirmación de Pago</h3>
+                <p style="font-size: 0.95rem; color: var(--text-muted); margin-bottom: 15px;">Realiza tu transferencia Nequi a este número:</p>
+                
+                <div style="background: var(--summary-bg); border: 2px dashed var(--highlight-text); padding: 15px; border-radius: 12px; margin-bottom: 20px;">
+                    <span style="font-size: 1.8rem; font-weight: 800; color: var(--success); letter-spacing: 2px;">3126186048</span>
+                </div>
+                
+                <p style="font-size: 0.85rem; color: var(--text-main); margin-bottom: 20px;">Al presionar el botón abajo, se abrirá WhatsApp para que envíes tu comprobante y confirmes tus números.</p>
+
+                <div style="display: flex; flex-direction: column; gap: 10px;">
+                    <button class="btn-submit" style="margin-top: 0; background: var(--success);" onclick="confirmarYRedirigirNequi()">✅ Listo, ya transferí / Enviar comprobante</button>
+                    <button class="btn-submit" style="margin-top: 0; background: #6B7280;" onclick="cerrarModalNequi()">Volver y revisar</button>
+                </div>
+            </div>
+        </div>
+
         <!-- --- PANTALLA 2: PANEL DE ADMINISTRACIÓN --- -->
         <section class="admin-section" id="adminSection">
             <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 15px;">
@@ -770,7 +814,6 @@
                 
                 <div style="display: flex; gap: 8px;">
                     <button class="btn-volver" onclick="abrirModalConfig()" style="margin-bottom: 0; border-color: var(--highlight-text); color: var(--highlight-text); font-weight: bold;">⚙️ Configurar Rifa</button>
-                    <!-- NUEVO: BOTÓN CON ÍCONO DE CANDADO PARA CAMBIAR CREDENCIALES -->
                     <button class="btn-volver" onclick="abrirModalCredenciales()" style="margin-bottom: 0; border-color: var(--highlight-text); color: var(--highlight-text); font-weight: bold; padding: 8px 12px;" title="Cambiar usuario y contraseña">🔒</button>
                 </div>
             </div>
@@ -805,6 +848,11 @@
                 <h1>🎟️ Gran Rifa Exclusiva</h1>
                 <p style="font-weight: 600; color: var(--highlight-text);">📚 Rifa para pagar estudios | Valor: $<span id="compradorValor">20.000</span> | Premio: $<span id="compradorPremio">1.000.000</span></p>
                 <p style="font-size: 0.95rem; margin-top: 5px; font-weight: 500;">🎰 Juega con: <strong id="compradorLoteria">Lotería de Medellín</strong> | 📅 Fecha: <strong id="compradorFecha">Por definir</strong></p>
+                
+                <div class="letrero-palpitante" style="max-width: 500px; margin: 12px auto;">
+                    ⚠️ BOLETA NO PAGADA, NO JUEGA
+                </div>
+
                 <p style="font-size: 0.85rem; margin-top: 3px; color: var(--text-muted);">Selecciona tus números de la suerte abajo</p>
             </header>
 
@@ -855,36 +903,26 @@
 
                     <div class="form-group">
                         <label for="whatsapp">Número de WhatsApp (10 dígitos) *</label>
-                        <input type="tel" id="whatsapp" class="form-control" placeholder="Ej. 3001234567" required pattern="[0-9]{10}" minlength="10" maxlength="10" title="Por favor, ingresa un número de WhatsApp válido de exactamente 10 dígitos numéricos">
+                        <input type="tel" id="whatsapp" class="form-control" placeholder="Ej. 3001234567" required pattern="[0-9]{10}" minlength="10" maxlength="10" title="Por favor, ingresa un número de WhatsApp válido de exactly 10 dígitos numéricos">
                     </div>
 
                     <div class="form-group">
-                        <label for="ciudad">Ciudad de Domicilio *</label>
-                        <input type="text" id="ciudad" class="form-control" placeholder="Ej. Bogotá" required>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="direccion">Dirección *</label>
-                        <input type="text" id="direccion" class="form-control" placeholder="Ej. Calle 123 # 45 - 67" required>
+                        <label for="ciudad">Ciudad de Domicilio (Opcional)</label>
+                        <input type="text" id="ciudad" class="form-control" placeholder="Ej. Bogotá">
                     </div>
 
                     <div class="form-group" style="grid-column: 1 / -1;">
                         <label>Opción de Pago ($<span id="labelPrecioBoleta">20.000</span> COP por puesto) *</label>
                         <div class="radio-group">
                             <label class="radio-label">
-                                <input type="radio" name="pago" value="Inmediato" required checked onchange="toggleCalendario()">
+                                <input type="radio" name="pago" value="Inmediato" required checked>
                                 Pagar de una vez (Transferencia o Efectivo)
                             </label>
                             <label class="radio-label">
-                                <input type="radio" name="pago" value="Aplazado" onchange="toggleCalendario()">
+                                <input type="radio" name="pago" value="Aplazado">
                                 Aplazar pago para después
                             </label>
                         </div>
-                    </div>
-
-                    <div class="form-group" id="grupoCalendario" style="grid-column: 1 / -1; display: none; background: var(--calendar-bg); padding: 15px; border-radius: 10px; border: 1px solid var(--calendar-border);">
-                        <label for="fechaPago" style="color: var(--calendar-text); font-weight: bold;">📅 Selecciona la fecha en la que vas a realizar el pago *</label>
-                        <input type="date" id="fechaPago" class="form-control" style="margin-top: 5px;">
                     </div>
 
                     <button type="submit" class="btn-submit">Confirmar y Apartar Números</button>
@@ -918,9 +956,11 @@
         let seleccionados = [];
         let reservas = [];
         
-        // --- NUEVO: VARIABLES DINÁMICAS PARA CREDENCIALES DE ADMINISTRADOR ---
         let ADMIN_USER = "admin";
         let ADMIN_PASS = "admin123";
+
+        // --- NUEVO: VARIABLE PARA GUARDAR TEMPORALMENTE LA URL DE WHATSAPP ---
+        let urlWhatsAppPendiente = "";
 
         // --- GESTIÓN DE MODO OSCURO ---
         function toggleDarkMode() {
@@ -972,7 +1012,6 @@
         function limpiarPantallaComprador() {
             seleccionados = [];
             document.getElementById('raffleForm').reset();
-            toggleCalendario();
             actualizarFormulario();
         }
 
@@ -985,7 +1024,6 @@
             document.getElementById('modalLogin').style.display = 'none';
         }
 
-        // MODIFICADO: AHORA COMPRUEBA CONTRA LAS CREDENCIALES DINÁMICAS GUARDADAS EN FIREBASE
         function verificarLogin() {
             const user = document.getElementById('adminUser').value;
             const pass = document.getElementById('adminPass').value;
@@ -1002,7 +1040,6 @@
             }
         }
 
-        // --- FUNCIONES DE LA VENTANA EMERGENTE DE CONFIGURACIÓN DE RIFA ---
         function abrirModalConfig() {
             document.getElementById('modalConfigRifa').style.display = 'flex';
         }
@@ -1011,7 +1048,6 @@
             document.getElementById('modalConfigRifa').style.display = 'none';
         }
 
-        // --- NUEVO: FUNCIONES DE LA VENTANA EMERGENTE DE CAMBIO DE CREDENCIALES ---
         function abrirModalCredenciales() {
             document.getElementById('nuevoAdminUser').value = ADMIN_USER;
             document.getElementById('nuevoAdminPass').value = '';
@@ -1022,7 +1058,18 @@
             document.getElementById('modalCredenciales').style.display = 'none';
         }
 
-        // NUEVO: GUARDAR CREDENCIALES PIDIENDO LA CONTRASEÑA ANTERIOR
+        // --- NUEVO: FUNCIONES DEL MODAL DE NEQUI ---
+        function cerrarModalNequi() {
+            document.getElementById('modalNequi').style.display = 'none';
+        }
+
+        function confirmarYRedirigirNequi() {
+            cerrarModalNequi();
+            if(urlWhatsAppPendiente !== "") {
+                window.open(urlWhatsAppPendiente, '_blank');
+            }
+        }
+
         function guardarCredencialesConSeguridad() {
             const nuevoUser = document.getElementById('nuevoAdminUser').value.trim();
             const nuevoPass = document.getElementById('nuevoAdminPass').value.trim();
@@ -1048,21 +1095,6 @@
                 mostrarToast("✔ Credenciales actualizadas en la nube. Úsalas en tu próximo ingreso.");
             } else {
                 alert("❌ La contraseña anterior es incorrecta. No se realizaron cambios.");
-            }
-        }
-
-        function toggleCalendario() {
-            const pagoAplazado = document.querySelector('input[name="pago"][value="Aplazado"]').checked;
-            const grupoCalendario = document.getElementById('grupoCalendario');
-            const fechaInput = document.getElementById('fechaPago');
-
-            if (pagoAplazado) {
-                grupoCalendario.style.display = 'flex';
-                fechaInput.required = true;
-            } else {
-                grupoCalendario.style.display = 'none';
-                fechaInput.required = false;
-                fechaInput.value = '';
             }
         }
 
@@ -1110,7 +1142,6 @@
                 }
             });
 
-            // NUEVO: ESCUCHAR Y ACTUALIZAR CREDENCIALES EN TIEMPO REAL DESDE FIREBASE
             const refCredenciales = db.ref('credenciales');
             refCredenciales.on('value', (snapshot) => {
                 const creds = snapshot.val();
@@ -1152,7 +1183,6 @@
             }
         }
 
-        // MODIFICADO: AHORA VERIFICA CONTRA LA CONTRASEÑA DINÁMICA GUARDADA EN LA NUBE
         function guardarConfigSorteoConSeguridad() {
             const confirmacionPass = prompt("🔒 Seguridad de Administrador:\nPor favor, ingresa tu contraseña de administrador para guardar los cambios de configuración:");
             
@@ -1180,7 +1210,7 @@
             }
         }
 
-        // 2. GENERAR LA CUADRÍCULA DE NÚMEROS
+        // 2. GENERAR LA CUADRÍCULA DE NÚMEROS DEL 00 AL 99
         function renderizarCuadricula() {
             const grid = document.getElementById('grid');
             grid.innerHTML = '';
@@ -1193,7 +1223,7 @@
                 if(r.estado === 'parcial') numParciales.push(...(r.numeros || []));
             });
 
-            for (let i = 1; i <= TOTAL_NUMEROS; i++) {
+            for (let i = 0; i < TOTAL_NUMEROS; i++) {
                 const btn = document.createElement('button');
                 btn.type = 'button';
                 btn.className = 'num-btn';
@@ -1257,19 +1287,18 @@
             }
         }
 
-        // 5. PROCESAR LA RESERVA Y ENVIARLA A FIREBASE
+        // 5. MODIFICADO: PROCESAR RESERVA Y MOSTRAR VENTANA DE NEQUI SI ES PAGO INMEDIATO
         function procesarReserva(e) {
             e.preventDefault();
 
             const nombre = document.getElementById('nombre').value.trim().toUpperCase();
             const whatsapp = document.getElementById('whatsapp').value.trim();
-            const ciudad = document.getElementById('ciudad').value.trim();
-            const direccion = document.getElementById('direccion').value.trim();
+            const ciudad = document.getElementById('ciudad').value.trim() || 'No indicada';
             let pago = document.querySelector('input[name="pago"]:checked').value;
-            const fechaPago = document.getElementById('fechaPago').value || 'N/A';
             const totalCalculado = `$${(seleccionados.length * PRECIO_BOLETA).toLocaleString('es-CO')} COP`;
 
-            if(pago === 'Inmediato') {
+            const esInmediato = (pago === 'Inmediato');
+            if(esInmediato) {
                 pago = 'Inmediato (Transferencia o Efectivo)';
             }
 
@@ -1278,11 +1307,9 @@
                 cliente: nombre,
                 whatsapp: whatsapp,
                 ciudad: ciudad,
-                direccion: direccion,
                 numeros: [...seleccionados],
                 pago: pago,
                 total: totalCalculado,
-                fechaPago: fechaPago,
                 estado: 'parcial'
             };
 
@@ -1291,14 +1318,20 @@
             mostrarToast("¡Reserva enviada y bloqueada en tiempo real!");
 
             const numsTexto = seleccionados.map(n => n < 10 ? `0${n}` : n).join(', ');
-            let textoFecha = fechaPago !== 'N/A' ? `\n*Fecha programada de pago:* ${fechaPago}` : '';
-            const mensaje = `Hola, acabo de apartar las boletas [ ${numsTexto} ] en la rifa.\n*Total a pagar:* ${totalCalculado}\n*Mis Datos:*\nNombre: ${nombre}\nCiudad: ${ciudad}\nDirección: ${direccion}\nWhatsApp: ${whatsapp}\nMétodo: ${pago}${textoFecha}`;
+            const mensaje = `Hola, acabo de apartar las boletas [ ${numsTexto} ] en la rifa.\n*Total a pagar:* ${totalCalculado}\n*Mis Datos:*\nNombre: ${nombre}\nCiudad: ${ciudad}\nWhatsApp: ${whatsapp}\nMétodo: ${pago}`;
             
-            const urlWhatsApp = `https://api.whatsapp.com/send?phone=573126186048&text=${encodeURIComponent(mensaje)}`;
+            // GUARDAMOS LA URL PARA USARLA LUEGO DE LA CONFIRMACIÓN
+            urlWhatsAppPendiente = `https://api.whatsapp.com/send?phone=573126186048&text=${encodeURIComponent(mensaje)}`;
             
             limpiarPantallaComprador();
 
-            setTimeout(() => { window.open(urlWhatsApp, '_blank'); }, 1500);
+            // SI ELIJE PAGAR DE UNA VEZ, ABRE EL RECUADRO DE NEQUI CON EL 3126186048
+            if(esInmediato) {
+                document.getElementById('modalNequi').style.display = 'flex';
+            } else {
+                // SI ELIJE PAGAR OTRO DÍA, REDIRIGE INMEDIATAMENTE AL WHATSAPP
+                setTimeout(() => { window.open(urlWhatsAppPendiente, '_blank'); }, 1500);
+            }
         }
 
         // --- FUNCIONES DEL PANEL DEL ADMINISTRADOR ---
@@ -1319,9 +1352,6 @@
                 
                 let badge = `<span class="badge badge-parcial">Bloqueo Parcial</span>`;
                 let infoPago = `<strong>${r.pago}</strong>`;
-                if (r.fechaPago && r.fechaPago !== 'N/A') {
-                    infoPago += `<br><small style="color: #D97706;">📅 Para: ${r.fechaPago}</small>`;
-                }
 
                 let actions = `
                     <button class="btn-action btn-aprobar" onclick="validarPagoAdmin('${r.idFirebase}', '${r.pago}')" title="Confirmar el dinero">✔ Validar Pago</button>
@@ -1357,7 +1387,6 @@
             mostrarToast("Pago validado en la nube.");
         }
 
-        // MODIFICADO: AHORA COMPRUEBA CONTRA LA CONTRASEÑA DINÁMICA GUARDADA EN FIREBASE
         function deshacerPagoConSeguridad(idFirebase, pagoAnterior) {
             const confirmacionPass = prompt("🔒 Seguridad de Administrador:\nPor favor, ingresa tu contraseña para deshacer este pago:");
             
