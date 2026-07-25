@@ -1,0 +1,1138 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gran Rifa Exclusiva - Selecciona tu Número</title>
+    <style>
+        /* --- MODO CLARO POR DEFECTO --- */
+        :root {
+            --primary: #4F46E5;
+            --primary-hover: #4338CA;
+            --success: #10B981;
+            --occupied: #9CA3AF;
+            --bg-body: #F3F4F6;
+            --bg-card: #FFFFFF;
+            --text-main: #1F2937;
+            --text-muted: #6B7280;
+            --border: #E5E7EB;
+            --btn-num-bg: #FFFFFF;
+            --summary-bg: #EEF2FF;
+            --th-bg: #F8FAFC;
+            --portal-btn-admin: #1F2937;
+            --portal-btn-admin-hover: #374151;
+            --highlight-text: #4F46E5;
+            --calendar-bg: rgba(245, 158, 11, 0.1);
+            --calendar-border: #F59E0B;
+            --calendar-text: #D97706;
+        }
+
+        /* --- MODO OSCURO --- */
+        body.dark-mode {
+            --bg-body: #000000;
+            --bg-card: #181818;
+            --text-main: #E5E5E5;
+            --text-muted: #999999;
+            --border: #333333;
+            --btn-num-bg: #222222;
+            --summary-bg: #222222;
+            --th-bg: #111111;
+            --portal-btn-admin: #333333;
+            --portal-btn-admin-hover: #444444;
+            --highlight-text: #FFFFFF;
+            --calendar-bg: #222222;
+            --calendar-border: #444444;
+            --calendar-text: #CCCCCC;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            line-height: 1.5;
+            padding: 20px 10px;
+            transition: background-color 0.3s ease, color 0.3s ease;
+            position: relative;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .btn-dark-mode {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: var(--bg-card);
+            color: var(--text-main);
+            border: 2px solid var(--border);
+            padding: 10px 15px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: bold;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            z-index: 1000;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-dark-mode:hover {
+            transform: scale(1.05);
+            border-color: var(--highlight-text);
+        }
+
+        .portal-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 80vh;
+            text-align: center;
+        }
+
+        .portal-card {
+            background: var(--bg-card);
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1);
+            max-width: 550px;
+            width: 100%;
+            transition: background-color 0.3s ease;
+        }
+
+        .raffle-info-box {
+            background: var(--summary-bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 15px;
+            margin: 20px 0;
+        }
+
+        .raffle-info-box h3 {
+            color: var(--highlight-text);
+            font-size: 1.3rem;
+            margin-bottom: 5px;
+        }
+
+        .raffle-info-box p {
+            font-size: 0.95rem;
+            color: var(--text-main);
+            font-weight: 500;
+        }
+
+        .portal-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-top: 25px;
+        }
+
+        .btn-portal {
+            padding: 18px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .btn-comprador {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .btn-comprador:hover {
+            background-color: var(--primary-hover);
+            transform: translateY(-2px);
+        }
+
+        .btn-admin {
+            background-color: var(--portal-btn-admin);
+            color: white;
+        }
+
+        .btn-admin:hover {
+            background-color: var(--portal-btn-admin-hover);
+            transform: translateY(-2px);
+        }
+
+        .modal-login {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.6);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: var(--bg-card);
+            padding: 30px;
+            border-radius: 16px;
+            max-width: 400px;
+            width: 90%;
+            box-shadow: 0 20px 25px -5px rgba(0,0,0,0.2);
+            color: var(--text-main);
+        }
+
+        /* --- NUEVO: ESTILOS PARA LA VENTANA DE REGLAS --- */
+        .modal-reglas-content {
+            background: var(--bg-card);
+            padding: 25px;
+            border-radius: 16px;
+            max-width: 600px;
+            width: 95%;
+            box-shadow: 0 20px 25px -5px rgba(0,0,0,0.3);
+            color: var(--text-main);
+            max-height: 85vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .reglas-scroll-box {
+            overflow-y: auto;
+            padding: 15px;
+            background: var(--summary-bg);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            margin: 15px 0;
+            font-size: 0.9rem;
+            line-height: 1.6;
+            text-align: left;
+        }
+
+        .reglas-scroll-box ol {
+            padding-left: 20px;
+        }
+
+        .reglas-scroll-box li {
+            margin-bottom: 10px;
+        }
+
+        .admin-section {
+            display: none;
+            background: var(--bg-card);
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+            margin-top: 20px;
+        }
+
+        .admin-table-container {
+            overflow-x: auto;
+            margin-top: 20px;
+        }
+
+        .admin-table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
+
+        .admin-table th, .admin-table td {
+            padding: 12px;
+            border-bottom: 1px solid var(--border);
+            font-size: 0.9rem;
+            color: var(--text-main);
+        }
+
+        .admin-table th {
+            background-color: var(--th-bg);
+            font-weight: bold;
+            color: var(--text-muted);
+        }
+
+        .badge {
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            display: inline-block;
+        }
+
+        .badge-parcial { background: #FEF3C7; color: #D97706; }
+        .badge-pagado { background: #D1FAE5; color: #059669; }
+
+        .btn-action {
+            padding: 6px 10px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-right: 5px;
+            margin-bottom: 3px;
+            transition: opacity 0.2s;
+        }
+
+        .btn-action:hover { opacity: 0.8; }
+        .btn-aprobar { background: var(--success); color: white; }
+        .btn-parcial { background: #F59E0B; color: white; }
+        .btn-liberar { background: #EF4444; color: white; }
+        .btn-deshacer { background: #6B7280; color: white; font-size: 0.7rem; }
+
+        .btn-volver {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text-main);
+            padding: 8px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+
+        .btn-volver:hover {
+            border-color: var(--highlight-text);
+            color: var(--highlight-text);
+        }
+
+        .num-btn.partial-occupied {
+            background-color: #FEF3C7;
+            border-color: #F59E0B;
+            color: #D97706;
+            cursor: not-allowed;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        header h1 {
+            color: var(--highlight-text);
+            font-size: 2rem;
+            margin-bottom: 5px;
+            font-weight: 800;
+        }
+
+        header p {
+            color: var(--text-muted);
+            font-size: 1rem;
+        }
+
+        .legend {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+            background: var(--bg-card);
+            padding: 12px;
+            border-radius: 10px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            border: 1px solid var(--border);
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .legend-color {
+            width: 16px;
+            height: 16px;
+            border-radius: 4px;
+            margin-right: 6px;
+            border: 1px solid rgba(0,0,0,0.2);
+        }
+
+        .grid-container {
+            background: var(--bg-card);
+            padding: 20px;
+            border-radius: 16px;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+            border: 1px solid var(--border);
+        }
+
+        .numbers-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(50px, 1fr));
+            gap: 10px;
+        }
+
+        .num-btn {
+            aspect-ratio: 1;
+            border: 2px solid var(--border);
+            background-color: var(--btn-num-bg);
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: var(--text-main);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            user-select: none;
+        }
+
+        .num-btn:hover:not(.occupied):not(.partial-occupied):not(.selected) {
+            border-color: var(--highlight-text);
+            color: var(--highlight-text);
+            transform: translateY(-2px);
+        }
+
+        .num-btn.selected {
+            background-color: var(--success);
+            border-color: var(--success);
+            color: white;
+            box-shadow: 0 4px 10px rgba(16, 185, 129, 0.3);
+            transform: scale(1.05);
+        }
+
+        .num-btn.occupied {
+            background-color: var(--border);
+            border-color: transparent;
+            color: var(--occupied);
+            cursor: not-allowed;
+            text-decoration: line-through;
+        }
+
+        .form-section {
+            background: var(--bg-card);
+            padding: 25px;
+            border-radius: 16px;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+            display: none;
+            animation: fadeIn 0.3s ease;
+            border-top: 5px solid var(--primary);
+            border-left: 1px solid var(--border);
+            border-right: 1px solid var(--border);
+            border-bottom: 1px solid var(--border);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .form-title {
+            font-size: 1.3rem;
+            margin-bottom: 15px;
+            color: var(--text-main);
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 10px;
+        }
+
+        .selected-summary {
+            background: var(--summary-bg);
+            color: var(--highlight-text);
+            padding: 12px 15px;
+            border-radius: 8px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            border: 1px solid var(--border);
+        }
+
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        @media (max-width: 600px) {
+            .form-grid { grid-template-columns: 1fr; }
+            header h1 { font-size: 1.6rem; }
+            .btn-dark-mode { top: 10px; right: 10px; padding: 8px 12px; font-size: 0.9rem; }
+            
+            .summary-row:first-child {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            #summaryCount {
+                margin-top: 6px;
+                display: block;
+                font-size: 0.95rem;
+                opacity: 0.9;
+            }
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: var(--text-main);
+        }
+
+        .form-control {
+            padding: 12px;
+            border: 1.5px solid var(--border);
+            border-radius: 8px;
+            font-size: 1rem;
+            background-color: var(--bg-card);
+            color: var(--text-main);
+            transition: border-color 0.2s;
+        }
+
+        #nombre {
+            text-transform: uppercase;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--highlight-text);
+        }
+
+        .radio-group {
+            display: flex;
+            gap: 20px;
+            padding: 10px 0;
+            flex-wrap: wrap;
+        }
+
+        .radio-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            font-weight: 500;
+        }
+
+        .btn-submit {
+            grid-column: 1 / -1;
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 15px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: background-color 0.2s, transform 0.1s;
+            margin-top: 10px;
+            width: 100%;
+        }
+
+        .btn-submit:hover {
+            background-color: var(--primary-hover);
+        }
+
+        .btn-submit:active {
+            transform: scale(0.99);
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: var(--primary);
+            color: white;
+            padding: 15px 25px;
+            border-radius: 10px;
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.3);
+            display: none;
+            z-index: 1000;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+
+    <button class="btn-dark-mode" onclick="toggleDarkMode()" id="btnDarkMode">
+        🌙 Modo Oscuro
+    </button>
+
+    <div class="container">
+        
+        <!-- --- PANTALLA 1: PORTAL DE BIENVENIDA --- -->
+        <section class="portal-section" id="portalSection">
+            <div class="portal-card">
+                <header style="margin-bottom: 5px;">
+                    <h1>🎟️ Gran Rifa Exclusiva</h1>
+                    <p style="font-weight: 600; color: var(--highlight-text);">📚 Rifa para pagar estudios</p>
+                </header>
+
+                <div class="raffle-info-box">
+                    <h3>🏆 Premio: $1.000.000</h3>
+                    <p>Valor del puesto: <strong>$20.000 COP</strong></p>
+                </div>
+
+                <p style="color: var(--text-muted); font-size: 0.95rem;">Selecciona tu opción de ingreso:</p>
+
+                <div class="portal-buttons">
+                    <button class="btn-portal btn-comprador" onclick="ingresarComoComprador()">
+                        🛍️ Quiero Comprar / Apartar Números
+                    </button>
+                    <button class="btn-portal btn-admin" onclick="abrirModalLogin()">
+                        🔒 Acceso Administrador
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- --- NUEVO: MODAL PARA REGLAS DE LA RIFA --- -->
+        <div class="modal-login" id="modalReglas">
+            <div class="modal-reglas-content">
+                <h3 style="color: var(--highlight-text); text-align: center; margin-bottom: 5px;">📜 REGLAS DE LA RIFA</h3>
+                <p style="font-size: 0.85rem; color: var(--text-muted); text-align: center;">Lee atentamente antes de participar:</p>
+                
+                <div class="reglas-scroll-box">
+                    <ol>
+                        <li>Toda boleta debe estar completamente pagada para participar en la rifa.</li>
+                        <li><strong>Boleta que no se paga, no juega.</strong></li>
+                        <li>Si la boleta no es pagada en la fecha acordada con el organizador, el número será cancelado y volverá a estar disponible para que otra persona lo elija.</li>
+                        <li>Una vez confirmado el pago, el número quedará oficialmente reservado a nombre del participante.</li>
+                        <li>La rifa se realizará con el resultado oficial de la <strong>Lotería de Medellín</strong> en la fecha previamente anunciada.</li>
+                        <li>El organizador de la rifa no elige el número ganador; el ganador será determinado únicamente por el resultado oficial de la Lotería de Medellín, garantizando total transparencia.</li>
+                        <li>Es responsibility de cada participante verificar la fecha del sorteo y consultar el resultado oficial.</li>
+                        <li>El premio se entregará únicamente al titular de la boleta ganadora o a quien pueda demostrar su propiedad.</li>
+                        <li>Al participar en la rifa, cada persona acepta estas reglas y condiciones.</li>
+                        <li>Cualquier situación no prevista en estas reglas será resuelta por el organizador de la rifa, procurando siempre actuar de manera justa y transparente.</li>
+                    </ol>
+                </div>
+
+                <div style="margin: 10px 0; text-align: left;">
+                    <label style="display: flex; align-items: center; gap: 10px; cursor: pointer; font-weight: 600; font-size: 0.95rem;">
+                        <input type="checkbox" id="checkReglas" style="width: 18px; height: 18px; cursor: pointer;">
+                        Acepto las reglas y condiciones
+                    </label>
+                </div>
+                
+                <p id="errorReglas" style="color: #EF4444; font-size: 0.85rem; margin-bottom: 10px; display: none; font-weight: bold; text-align: center;">Debes marcar la casilla de aceptación para poder continuar.</p>
+
+                <div style="display: flex; gap: 10px; margin-top: 10px;">
+                    <button class="btn-submit" style="margin-top: 0;" onclick="validarReglas()">Aceptar</button>
+                    <button class="btn-submit" style="margin-top: 0; background: #6B7280;" onclick="rechazarReglas()">No acepto</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- --- MODAL PARA LOGIN DE ADMINISTRADOR --- -->
+        <div class="modal-login" id="modalLogin">
+            <div class="modal-content">
+                <h3 style="margin-bottom: 15px;">🔐 Acceso Administrativo</h3>
+                <div class="form-group">
+                    <label>Usuario</label>
+                    <input type="text" id="adminUser" class="form-control" placeholder="admin">
+                </div>
+                <div class="form-group">
+                    <label>Contraseña</label>
+                    <input type="password" id="adminPass" class="form-control" placeholder="••••••••">
+                </div>
+                <p id="errorLogin" style="color: #EF4444; font-size: 0.85rem; margin-bottom: 10px; display: none; font-weight: bold;">Usuario o contraseña incorrectos.</p>
+                <div style="display: flex; gap: 10px;">
+                    <button class="btn-submit" style="margin-top: 0;" onclick="verificarLogin()">Entrar</button>
+                    <button class="btn-submit" style="margin-top: 0; background: #6B7280;" onclick="cerrarModalLogin()">Cancelar</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- --- PANTALLA 2: PANEL DE ADMINISTRACIÓN --- -->
+        <section class="admin-section" id="adminSection">
+            <button class="btn-volver" onclick="volverAlPortal()">⬅️ Volver al Inicio</button>
+            <h2 class="form-title">🛡️ Panel de Gestión de la Rifa</h2>
+            <p style="color: var(--text-muted); font-size: 0.9rem;">Aquí puedes validar pagos o liberar números pendientes.</p>
+            
+            <div class="admin-table-container">
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>Números</th>
+                            <th>Comprador</th>
+                            <th>WhatsApp</th>
+                            <th>Tipo Pago / Fecha</th>
+                            <th>Total Pagar</th>
+                            <th>Estado Actual</th>
+                            <th>Acciones del Administrador</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tablaAdmin">
+                        <!-- Se llena con JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- --- PANTALLA 3: INTERFAZ DEL COMPRADOR --- -->
+        <div id="compradorSection" style="display: none;">
+            <button class="btn-volver" onclick="volverAlPortal()" style="margin-top: 10px;">⬅️ Volver al Inicio</button>
+            <header>
+                <h1>🎟️ Gran Rifa Exclusiva</h1>
+                <p style="font-weight: 600; color: var(--highlight-text);">📚 Rifa para pagar estudios | Valor: $20.000 | Premio: $1.000.000</p>
+                <p style="font-size: 0.9rem; margin-top: 5px;">Selecciona tus números de la suerte abajo</p>
+            </header>
+
+            <div class="legend">
+                <div class="legend-item">
+                    <div class="legend-color" style="background: var(--btn-num-bg); border: 2px solid var(--border);"></div>
+                    <span>Disponible</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: var(--success);"></div>
+                    <span>Tu Selección</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #FEF3C7; border: 1px solid #F59E0B;"></div>
+                    <span>Bloqueo Parcial</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: var(--border);"></div>
+                    <span>Vendido</span>
+                </div>
+            </div>
+
+            <main class="grid-container">
+                <div class="numbers-grid" id="grid">
+                    <!-- Los números se generan por JavaScript -->
+                </div>
+            </main>
+
+            <section class="form-section" id="formSection">
+                <h2 class="form-title">Completa tus datos para apartar</h2>
+                
+                <div class="selected-summary">
+                    <div class="summary-row">
+                        <span>Números seleccionados: <strong id="summaryNumbers"></strong></span>
+                        <span id="summaryCount">0 boletas</span>
+                    </div>
+                    <div class="summary-row" style="border-top: 1px dashed rgba(150, 150, 150, 0.3); padding-top: 5px; margin-top: 5px; font-size: 1.1rem;">
+                        <span>Total a pagar:</span>
+                        <strong id="summaryTotal" style="color: var(--success);">$0 COP</strong>
+                    </div>
+                </div>
+
+                <form id="raffleForm" class="form-grid" onsubmit="procesarReserva(event)">
+                    <div class="form-group">
+                        <label for="nombre">Nombre Completo *</label>
+                        <input type="text" id="nombre" class="form-control" placeholder="Ej. JUAN PÉREZ" required oninput="this.value = this.value.toUpperCase()">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="whatsapp">Número de WhatsApp (10 dígitos) *</label>
+                        <input type="tel" id="whatsapp" class="form-control" placeholder="Ej. 3001234567" required pattern="[0-9]{10}" minlength="10" maxlength="10" title="Por favor, ingresa un número de WhatsApp válido de exactamente 10 dígitos numéricos">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="ciudad">Ciudad de Domicilio *</label>
+                        <input type="text" id="ciudad" class="form-control" placeholder="Ej. Bogotá" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="direccion">Dirección *</label>
+                        <input type="text" id="direccion" class="form-control" placeholder="Ej. Calle 123 # 45 - 67" required>
+                    </div>
+
+                    <div class="form-group" style="grid-column: 1 / -1;">
+                        <label>Opción de Pago ($20.000 COP por puesto) *</label>
+                        <div class="radio-group">
+                            <label class="radio-label">
+                                <input type="radio" name="pago" value="Inmediato" required checked onchange="toggleCalendario()">
+                                Pagar de una vez (Transferencia o Efectivo)
+                            </label>
+                            <label class="radio-label">
+                                <input type="radio" name="pago" value="Aplazado" onchange="toggleCalendario()">
+                                Aplazar pago para después
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="form-group" id="grupoCalendario" style="grid-column: 1 / -1; display: none; background: var(--calendar-bg); padding: 15px; border-radius: 10px; border: 1px solid var(--calendar-border);">
+                        <label for="fechaPago" style="color: var(--calendar-text); font-weight: bold;">📅 Selecciona la fecha en la que vas a realizar el pago *</label>
+                        <input type="date" id="fechaPago" class="form-control" style="margin-top: 5px;">
+                    </div>
+
+                    <button type="submit" class="btn-submit">Confirmar y Apartar Números</button>
+                </form>
+            </section>
+        </div>
+
+    </div>
+
+    <div class="toast" id="toast">¡Números apartados con éxito!</div>
+
+    <script>
+        // ESTADO DE LA APLICACIÓN
+        const TOTAL_NUMEROS = 100;
+        const PRECIO_BOLETA = 20000;
+        let seleccionados = [];
+        let reservas = [];
+
+        // --- GESTIÓN DE MODO OSCURO ---
+        function toggleDarkMode() {
+            document.body.classList.toggle('dark-mode');
+            const esOscuro = document.body.classList.contains('dark-mode');
+            const btn = document.getElementById('btnDarkMode');
+            btn.innerHTML = esOscuro ? '☀️ Modo Claro' : '🌙 Modo Oscuro';
+            localStorage.setItem('rifa_modo_oscuro', esOscuro ? 'si' : 'no');
+        }
+
+        function cargarModoOscuro() {
+            const preferido = localStorage.getItem('rifa_modo_oscuro');
+            if (preferido === 'si') {
+                document.body.classList.add('dark-mode');
+                document.getElementById('btnDarkMode').innerHTML = '☀️ Modo Claro';
+            }
+        }
+
+        // --- NAVEGACIÓN Y ACCESO (MODIFICADO: AHORA SIEMPRE ABRE LAS REGLAS PRIMERO) ---
+        function ingresarComoComprador() {
+            // Reiniciamos la casilla para que esté sin marcar SIEMPRE que intente entrar
+            document.getElementById('checkReglas').checked = false;
+            document.getElementById('errorReglas').style.display = 'none';
+            document.getElementById('modalReglas').style.display = 'flex';
+        }
+
+        // NUEVO: VALIDA QUE HAYA MARCADO LA CASILLA ANTES DE ENTRAR
+        function validarReglas() {
+            const aceptado = document.getElementById('checkReglas').checked;
+            if (aceptado) {
+                document.getElementById('modalReglas').style.display = 'none';
+                document.getElementById('portalSection').style.display = 'none';
+                document.getElementById('compradorSection').style.display = 'block';
+                renderizarCuadricula();
+            } else {
+                document.getElementById('errorReglas').style.display = 'block';
+            }
+        }
+
+        // NUEVO: SI DA EN NO ACEPTO, LO REGRESA AL INICIO
+        function rechazarReglas() {
+            document.getElementById('modalReglas').style.display = 'none';
+        }
+
+        function volverAlPortal() {
+            limpiarPantallaComprador();
+            document.getElementById('compradorSection').style.display = 'none';
+            document.getElementById('adminSection').style.display = 'none';
+            document.getElementById('portalSection').style.display = 'flex';
+        }
+
+        function limpiarPantallaComprador() {
+            seleccionados = [];
+            document.getElementById('raffleForm').reset();
+            toggleCalendario();
+            actualizarFormulario();
+        }
+
+        function abrirModalLogin() {
+            document.getElementById('modalLogin').style.display = 'flex';
+            document.getElementById('errorLogin').style.display = 'none';
+        }
+
+        function cerrarModalLogin() {
+            document.getElementById('modalLogin').style.display = 'none';
+        }
+
+        function verificarLogin() {
+            const user = document.getElementById('adminUser').value;
+            const pass = document.getElementById('adminPass').value;
+            
+            if(user === 'admin' && pass === 'admin123') {
+                cerrarModalLogin();
+                document.getElementById('portalSection').style.display = 'none';
+                document.getElementById('adminSection').style.display = 'block';
+                document.getElementById('adminUser').value = '';
+                document.getElementById('adminPass').value = '';
+                renderizarTablaAdmin();
+            } else {
+                document.getElementById('errorLogin').style.display = 'block';
+            }
+        }
+
+        function toggleCalendario() {
+            const pagoAplazado = document.querySelector('input[name="pago"][value="Aplazado"]').checked;
+            const grupoCalendario = document.getElementById('grupoCalendario');
+            const fechaInput = document.getElementById('fechaPago');
+
+            if (pagoAplazado) {
+                grupoCalendario.style.display = 'flex';
+                fechaInput.required = true;
+            } else {
+                grupoCalendario.style.display = 'none';
+                fechaInput.required = false;
+                fechaInput.value = '';
+            }
+        }
+
+        // 1. INICIALIZACIÓN DE DATOS
+        function cargarEstado() {
+            const guardados = localStorage.getItem('rifa_reservas_completas');
+            if (guardados) {
+                reservas = JSON.parse(guardados);
+            } else {
+                reservas = [
+                    { id: Date.now()+1, cliente: 'CARLOS MENDOZA', whatsapp: '3001112233', ciudad: 'Bogotá', direccion: 'Calle 10 # 5-20', numeros: [7, 13], pago: 'Inmediato (Transferencia o Efectivo)', total: '$40.000 COP', fechaPago: 'N/A', estado: 'parcial' },
+                    { id: Date.now()+2, cliente: 'ANA GÓMEZ', whatsapp: '3104445566', ciudad: 'Medellín', direccion: 'Cra 43 # 12-8', numeros: [22, 45], pago: 'Aplazado', total: '$40.000 COP', fechaPago: '2026-08-01', estado: 'parcial' }
+                ];
+                guardarEstado();
+            }
+        }
+
+        function guardarEstado() {
+            localStorage.setItem('rifa_reservas_completas', JSON.stringify(reservas));
+        }
+
+        // 2. GENERAR LA CUADRÍCULA DE NÚMEROS
+        function renderizarCuadricula() {
+            const grid = document.getElementById('grid');
+            grid.innerHTML = '';
+
+            let numPagados = [];
+            let numParciales = [];
+
+            reservas.forEach(r => {
+                if(r.estado === 'pagado') numPagados.push(...r.numeros);
+                if(r.estado === 'parcial') numParciales.push(...r.numeros);
+            });
+
+            for (let i = 1; i <= TOTAL_NUMEROS; i++) {
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.className = 'num-btn';
+                btn.textContent = i < 10 ? `0${i}` : i;
+                
+                if (numPagados.includes(i)) {
+                    btn.classList.add('occupied');
+                    btn.title = "Número vendido e inhabilitado";
+                } else if (numParciales.includes(i)) {
+                    btn.classList.add('partial-occupied');
+                    btn.title = "Número con bloqueo parcial (Pago aplazado)";
+                } else {
+                    btn.onclick = () => alternarSeleccion(i, btn);
+                }
+
+                grid.appendChild(btn);
+            }
+        }
+
+        // 3. SELECCIONAR / DESELECCIONAR NÚMEROS
+        function alternarSeleccion(num, btn) {
+            const index = seleccionados.indexOf(num);
+
+            if (index === -1) {
+                seleccionados.push(num);
+                btn.classList.add('selected');
+            } else {
+                seleccionados.splice(index, 1);
+                btn.classList.remove('selected');
+            }
+
+            seleccionados.sort((a, b) => a - b);
+            actualizarFormulario();
+        }
+
+        // 4. ACTUALIZAR VISIBILIDAD Y DATOS DEL FORMULARIO
+        function actualizarFormulario() {
+            const formSection = document.getElementById('formSection');
+            const summaryNumbers = document.getElementById('summaryNumbers');
+            const summaryCount = document.getElementById('summaryCount');
+            const summaryTotal = document.getElementById('summaryTotal');
+
+            if (seleccionados.length > 0) {
+                formSection.style.display = 'block';
+                const formateados = seleccionados.map(n => n < 10 ? `0${n}` : n);
+                summaryNumbers.textContent = formateados.join(', ');
+                summaryCount.textContent = `${seleccionados.length} ${seleccionados.length === 1 ? 'boleta' : 'boletas'}`;
+                
+                const totalCalculado = seleccionados.length * PRECIO_BOLETA;
+                summaryTotal.textContent = `$${totalCalculado.toLocaleString('es-CO')} COP`;
+                
+                if (seleccionados.length === 1) {
+                    formSection.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                }
+            } else {
+                formSection.style.display = 'none';
+            }
+        }
+
+        // 5. PROCESAR LA RESERVA
+        function procesarReserva(e) {
+            e.preventDefault();
+
+            const nombre = document.getElementById('nombre').value.trim().toUpperCase();
+            const whatsapp = document.getElementById('whatsapp').value.trim();
+            const ciudad = document.getElementById('ciudad').value.trim();
+            const direccion = document.getElementById('direccion').value.trim();
+            let pago = document.querySelector('input[name="pago"]:checked').value;
+            const fechaPago = document.getElementById('fechaPago').value || 'N/A';
+            const totalCalculado = `$${(seleccionados.length * PRECIO_BOLETA).toLocaleString('es-CO')} COP`;
+
+            if(pago === 'Inmediato') {
+                pago = 'Inmediato (Transferencia o Efectivo)';
+            }
+
+            const nuevoRegistro = {
+                id: Date.now(),
+                cliente: nombre,
+                whatsapp: whatsapp,
+                ciudad: ciudad,
+                direccion: direccion,
+                numeros: [...seleccionados],
+                pago: pago,
+                total: totalCalculado,
+                fechaPago: fechaPago,
+                estado: 'parcial'
+            };
+
+            reservas.push(nuevoRegistro);
+            guardarEstado();
+
+            mostrarToast("¡Reserva enviada! El administrador validará tu solicitud.");
+
+            const numsTexto = seleccionados.map(n => n < 10 ? `0${n}` : n).join(', ');
+            let textoFecha = fechaPago !== 'N/A' ? `\n*Fecha programada de pago:* ${fechaPago}` : '';
+            const mensaje = `Hola, acabo de apartar las boletas [ ${numsTexto} ] en la rifa.\n*Total a pagar:* ${totalCalculado}\n*Mis Datos:*\nNombre: ${nombre}\nCiudad: ${ciudad}\nDirección: ${direccion}\nWhatsApp: ${whatsapp}\nMétodo: ${pago}${textoFecha}`;
+            
+            const urlWhatsApp = `https://api.whatsapp.com/send?phone=573126186048&text=${encodeURIComponent(mensaje)}`;
+            
+            limpiarPantallaComprador();
+            renderizarCuadricula();
+
+            setTimeout(() => { window.open(urlWhatsApp, '_blank'); }, 1500);
+        }
+
+        // --- FUNCIONES DEL PANEL DEL ADMINISTRADOR ---
+        function renderizarTablaAdmin() {
+            const tbody = document.getElementById('tablaAdmin');
+            tbody.innerHTML = '';
+
+            if(reservas.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;">No hay reservas registradas.</td></tr>';
+                return;
+            }
+
+            const reservasInvertidas = [...reservas].reverse();
+
+            reservasInvertidas.forEach(r => {
+                const tr = document.createElement('tr');
+                const numsFormat = r.numeros.map(n => n < 10 ? `0${n}` : n).join(', ');
+                
+                let badge = `<span class="badge badge-parcial">Bloqueo Parcial</span>`;
+                let infoPago = `<strong>${r.pago}</strong>`;
+                if (r.fechaPago && r.fechaPago !== 'N/A') {
+                    infoPago += `<br><small style="color: #D97706;">📅 Para: ${r.fechaPago}</small>`;
+                }
+
+                let actions = `
+                    <button class="btn-action btn-aprobar" onclick="validarPagoAdmin(${r.id})" title="Confirmar el dinero">✔ Validar Pago</button>
+                    <button class="btn-action btn-parcial" onclick="cambiarEstadoAdmin(${r.id}, 'parcial')" title="Dejar en bloqueo parcial">⏳ Bloqueo Parcial</button>
+                    <button class="btn-action btn-liberar" onclick="eliminarReservaAdmin(${r.id})" title="Eliminar y liberar números">✖ Liberar</button>
+                `;
+
+                if(r.estado === 'pagado') {
+                    badge = `<span class="badge badge-pagado">Inhabilitado / Pagado</span>`;
+                    infoPago = `<span style="color: var(--success); font-weight: bold;">✔ Pagado</span>`;
+                    actions = `<button class="btn-action btn-deshacer" onclick="deshacerPagoConSeguridad(${r.id})" title="Pide contraseña para volver a pendiente">🔒 Deshacer pago</button>`;
+                }
+
+                tr.innerHTML = `
+                    <td><strong>${numsFormat}</strong></td>
+                    <td>${r.cliente}</td>
+                    <td><a href="https://wa.me/${r.whatsapp}" target="_blank" style="color:var(--highlight-text); font-weight:bold;">${r.whatsapp}</a></td>
+                    <td>${infoPago}</td>
+                    <td><strong style="color: var(--highlight-text);">${r.total || '$0 COP'}</strong></td>
+                    <td>${badge}</td>
+                    <td>${actions}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function validarPagoAdmin(id) {
+            const index = reservas.findIndex(r => r.id === id);
+            if(index !== -1) {
+                reservas[index].estado = 'pagado';
+                reservas[index].pagoGuardado = reservas[index].pago;
+                reservas[index].pago = 'Pagado';
+                guardarEstado();
+                renderizarTablaAdmin();
+                mostrarToast("Pago validado. Números inhabilitados permanentemente.");
+            }
+        }
+
+        function deshacerPagoConSeguridad(id) {
+            const confirmacionPass = prompt("🔒 Seguridad de Administrador:\nPor favor, ingresa tu contraseña para deshacer este pago:");
+            
+            if (confirmacionPass === null) {
+                return;
+            }
+
+            if (confirmacionPass === 'admin123') {
+                const index = reservas.findIndex(r => r.id === id);
+                if(index !== -1) {
+                    reservas[index].estado = 'parcial';
+                    reservas[index].pago = reservas[index].pagoGuardado || 'Aplazado';
+                    guardarEstado();
+                    renderizarTablaAdmin();
+                    mostrarToast("✔ Pago deshecho correctamente.");
+                }
+            } else {
+                alert("❌ Contraseña incorrecta. El pago no fue modificado para proteger la reserva.");
+            }
+        }
+
+        function cambiarEstadoAdmin(id, nuevoEstado) {
+            const index = reservas.findIndex(r => r.id === id);
+            if(index !== -1) {
+                reservas[index].estado = nuevoEstado;
+                guardarEstado();
+                renderizarTablaAdmin();
+                mostrarToast("Estado actualizado correctamente.");
+            }
+        }
+
+        function eliminarReservaAdmin(id) {
+            if(confirm("¿Estás seguro de liberar estos números? Volverán a estar disponibles para compra.")) {
+                reservas = reservas.filter(r => r.id !== id);
+                guardarEstado();
+                renderizarTablaAdmin();
+                mostrarToast("Números liberados con éxito.");
+            }
+        }
+
+        // 6. MOSTRAR MENSAJE EMERGENTE DE CONFIRMACIÓN
+        function mostrarToast(mensaje) {
+            const toast = document.getElementById('toast');
+            toast.textContent = mensaje;
+            toast.style.display = 'block';
+            setTimeout(() => {
+                toast.style.display = 'none';
+            }, 4000);
+        }
+
+        // INICIAR AL CARGAR LA PÁGINA
+        window.onload = () => {
+            cargarEstado();
+            cargarModoOscuro();
+        };
+    </script>
+</body>
+</html>
