@@ -584,9 +584,8 @@
                 </header>
 
                 <div class="raffle-info-box">
-                    <h3>🏆 Premio: $1.000.000</h3>
-                    <p>Valor del puesto: <strong>$20.000 COP</strong></p>
-                    <!-- NUEVO: MUESTRA LOTERÍA Y FECHA DINÁMICAMENTE -->
+                    <h3>🏆 Premio: $<span id="portalPremio">1.000.000</span></h3>
+                    <p>Valor del puesto: <strong>$<span id="portalValor">20.000</span> COP</strong></p>
                     <p style="margin-top: 8px; border-top: 1px dashed var(--border); padding-top: 8px;">🎰 Juega con: <strong id="portalLoteria" style="color: var(--highlight-text);">Lotería de Medellín</strong></p>
                     <p>📅 Fecha del sorteo: <strong id="portalFecha" style="color: var(--highlight-text);">Por definir</strong></p>
                 </div>
@@ -616,7 +615,6 @@
                         <li><strong>Boleta que no se paga, no juega.</strong></li>
                         <li>Si la boleta no es pagada en la fecha acordada con el organizador, el número será cancelado y volverá a estar disponible para que otra persona lo elija.</li>
                         <li>Una vez confirmado el pago, el número quedará oficialmente reservado a nombre del participante.</li>
-                        <!-- MODIFICADO: LAS REGLAS 5 Y 6 MUESTRAN LA LOTERÍA Y FECHA DINÁMICAMENTE -->
                         <li>La rifa se realizará con el resultado oficial de la <strong class="text-loteria-dinamica">Lotería de Medellín</strong> en la fecha <strong class="text-fecha-dinamica">previamente anunciada</strong>.</li>
                         <li>El organizador de la rifa no elige el número ganador; el ganador será determinado únicamente por el resultado oficial de la <strong class="text-loteria-dinamica">Lotería de Medellín</strong>, garantizando total transparencia.</li>
                         <li>Es responsibility de cada participante verificar la fecha del sorteo y consultar el resultado oficial.</li>
@@ -662,85 +660,124 @@
             </div>
         </div>
 
+        <!-- --- MODAL DE CONFIGURACIÓN DE LA RIFA (SOBRE LA PÁGINA) --- -->
+        <div class="modal-login" id="modalConfigRifa">
+            <div class="modal-content" style="max-width: 500px;">
+                <h3 style="color: var(--highlight-text); text-align: center; margin-bottom: 15px;">⚙️ Configuración Oficial de la Rifa</h3>
+                <div class="form-group">
+                    <label for="adminLoteria">Lotería del Sorteo:</label>
+                    <select id="adminLoteria" class="form-control" style="cursor: pointer;">
+                        <option value="Lotería de Bogotá">Lotería de Bogotá</option>
+                        <option value="Lotería de Medellín">Lotería de Medellín</option>
+                        <option value="Lotería del Valle">Lotería del Valle</option>
+                        <option value="Lotería de Boyacá">Lotería de Boyacá</option>
+                        <option value="Lotería del Cauca">Lotería del Cauca</option>
+                        <option value="Lotería de Cundinamarca">Lotería de Cundinamarca</option>
+                        <option value="Lotería de la Cruz Roja">Lotería de la Cruz Roja</option>
+                        <option value="Lotería del Huila">Lotería del Huila</option>
+                        <option value="Lotería de Manizales">Lotería de Manizales</option>
+                        <option value="Lotería del Meta">Lotería del Meta</option>
+                        <option value="Lotería del Quindío">Lotería del Quindío</option>
+                        <option value="Lotería de Risaralda">Lotería de Risaralda</option>
+                        <option value="Lotería de Santander">Lotería de Santander</option>
+                        <option value="Lotería del Tolima">Lotería del Tolima</option>
+                        <option value="Antioqueñita 1 (Día)">Antioqueñita 1 (Día)</option>
+                        <option value="Antioqueñita 2 (Tarde)">Antioqueñita 2 (Tarde)</option>
+                        <option value="Paisita Día">Paisita Día</option>
+                        <option value="Paisita Noche">Paisita Noche</option>
+                        <option value="Chontico Día">Chontico Día</option>
+                        <option value="Chontico Noche">Chontico Noche</option>
+                        <option value="Super Chontico Noche">Super Chontico Noche</option>
+                        <option value="Cafeterito Tarde">Cafeterito Tarde</option>
+                        <option value="Cafeterito Noche">Cafeterito Noche</option>
+                        <option value="Dorado Mañana">Dorado Mañana</option>
+                        <option value="Dorado Tarde">Dorado Tarde</option>
+                        <option value="Dorado Noche">Dorado Noche</option>
+                        <option value="Astro Sol">Astro Sol</option>
+                        <option value="Astro Luna">Astro Luna</option>
+                        <option value="Caribeña Día">Caribeña Día</option>
+                        <option value="Caribeña Noche">Caribeña Noche</option>
+                        <option value="Sinuano Día">Sinuano Día</option>
+                        <option value="Sinuano Noche">Sinuano Noche</option>
+                        <option value="Fantástica Día">Fantástica Día</option>
+                        <option value="Fantástica Noche">Fantástica Noche</option>
+                        <option value="Motilón Tarde">Motilón Tarde</option>
+                        <option value="Motilón Noche">Motilón Noche</option>
+                        <option value="Pijao de Oro">Pijao de Oro</option>
+                        <option value="Samán de la Suerte">Samán de la Suerte</option>
+                        <option value="Culona Día">Culona Día</option>
+                        <option value="Culona Noche">Culona Noche</option>
+                        <option value="Pick 3 Día">Pick 3 Día</option>
+                        <option value="Pick 3 Noche">Pick 3 Noche</option>
+                        <option value="Pick 4 Día">Pick 4 Día</option>
+                        <option value="Pick 4 Noche">Pick 4 Noche</option>
+                        <option value="Baloto">Baloto</option>
+                        <option value="Baloto Revancha">Baloto Revancha</option>
+                        <option value="MiLoto">MiLoto</option>
+                        <option value="ColorLoto">ColorLoto</option>
+                        <option value="Placa Millonaria Moto">Placa Millonaria Moto</option>
+                        <option value="Paisa Lotto">Paisa Lotto</option>
+                        <option value="La Perla Día">La Perla Día</option>
+                        <option value="La Perla Noche">La Perla Noche</option>
+                        <option value="Cash Día">Cash Día</option>
+                        <option value="Cash Noche">Cash Noche</option>
+                        <option value="Play Four Día">Play Four Día</option>
+                        <option value="Play Four Noche">Play Four Noche</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="adminFechaSorteo">Fecha del Sorteo:</label>
+                    <input type="date" id="adminFechaSorteo" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label for="adminValorBoleta">Valor de la Boleta ($ COP):</label>
+                    <input type="number" id="adminValorBoleta" class="form-control" placeholder="Ej: 20000">
+                </div>
+                <div class="form-group">
+                    <label for="adminPremioRifa">Premio de la Rifa ($ COP):</label>
+                    <input type="number" id="adminPremioRifa" class="form-control" placeholder="Ej: 1000000">
+                </div>
+                <div style="display: flex; gap: 10px; margin-top: 15px;">
+                    <button class="btn-submit" style="margin-top: 0;" onclick="guardarConfigSorteoConSeguridad()">💾 Guardar</button>
+                    <button class="btn-submit" style="margin-top: 0; background: #6B7280;" onclick="cerrarModalConfig()">Cancelar</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- --- NUEVO: MODAL PARA CAMBIO DE USUARIO Y CONTRASEÑA --- -->
+        <div class="modal-login" id="modalCredenciales">
+            <div class="modal-content" style="max-width: 400px;">
+                <h3 style="color: var(--highlight-text); text-align: center; margin-bottom: 15px;">🔒 Cambiar Credenciales de Acceso</h3>
+                <div class="form-group">
+                    <label for="nuevoAdminUser">Nuevo Usuario:</label>
+                    <input type="text" id="nuevoAdminUser" class="form-control" placeholder="Ej: admin">
+                </div>
+                <div class="form-group">
+                    <label for="nuevoAdminPass">Nueva Contraseña:</label>
+                    <input type="password" id="nuevoAdminPass" class="form-control" placeholder="Escribe tu nueva contraseña">
+                </div>
+                <div style="display: flex; gap: 10px; margin-top: 15px;">
+                    <button class="btn-submit" style="margin-top: 0;" onclick="guardarCredencialesConSeguridad()">💾 Guardar</button>
+                    <button class="btn-submit" style="margin-top: 0; background: #6B7280;" onclick="cerrarModalCredenciales()">Cancelar</button>
+                </div>
+            </div>
+        </div>
+
         <!-- --- PANTALLA 2: PANEL DE ADMINISTRACIÓN --- -->
         <section class="admin-section" id="adminSection">
-            <button class="btn-volver" onclick="volverAlPortal()">⬅️ Volver al Inicio</button>
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 15px;">
+                <button class="btn-volver" onclick="volverAlPortal()" style="margin-bottom: 0;">⬅️ Volver al Inicio</button>
+                
+                <div style="display: flex; gap: 8px;">
+                    <button class="btn-volver" onclick="abrirModalConfig()" style="margin-bottom: 0; border-color: var(--highlight-text); color: var(--highlight-text); font-weight: bold;">⚙️ Configurar Rifa</button>
+                    <!-- NUEVO: BOTÓN CON ÍCONO DE CANDADO PARA CAMBIAR CREDENCIALES -->
+                    <button class="btn-volver" onclick="abrirModalCredenciales()" style="margin-bottom: 0; border-color: var(--highlight-text); color: var(--highlight-text); font-weight: bold; padding: 8px 12px;" title="Cambiar usuario y contraseña">🔒</button>
+                </div>
+            </div>
+            
             <h2 class="form-title">🛡️ Panel de Gestión de la Rifa</h2>
             <p style="color: var(--text-muted); font-size: 0.9rem;">Aquí puedes validar pagos o liberar números pendientes.</p>
             
-            <!-- NUEVO: SECCIÓN DE CONFIGURACIÓN DE LOTERÍA Y FECHA -->
-            <div style="background: var(--summary-bg); border: 1px solid var(--border); padding: 20px; border-radius: 12px; margin-top: 20px; margin-bottom: 25px;">
-                <h3 style="color: var(--highlight-text); margin-bottom: 15px; font-size: 1.1rem;">⚙️ Configuración Oficial del Sorteo</h3>
-                <div class="form-grid">
-                    <div class="form-group" style="margin-bottom: 0;">
-                        <label for="adminLoteria">Lotería del Sorteo:</label>
-                        <select id="adminLoteria" class="form-control" style="cursor: pointer;">
-                            <option value="Lotería de Bogotá">Lotería de Bogotá</option>
-                            <option value="Lotería de Medellín">Lotería de Medellín</option>
-                            <option value="Lotería del Valle">Lotería del Valle</option>
-                            <option value="Lotería de Boyacá">Lotería de Boyacá</option>
-                            <option value="Lotería del Cauca">Lotería del Cauca</option>
-                            <option value="Lotería de Cundinamarca">Lotería de Cundinamarca</option>
-                            <option value="Lotería de la Cruz Roja">Lotería de la Cruz Roja</option>
-                            <option value="Lotería del Huila">Lotería del Huila</option>
-                            <option value="Lotería de Manizales">Lotería de Manizales</option>
-                            <option value="Lotería del Meta">Lotería del Meta</option>
-                            <option value="Lotería del Quindío">Lotería del Quindío</option>
-                            <option value="Lotería de Risaralda">Lotería de Risaralda</option>
-                            <option value="Lotería de Santander">Lotería de Santander</option>
-                            <option value="Lotería del Tolima">Lotería del Tolima</option>
-                            <option value="Antioqueñita 1 (Día)">Antioqueñita 1 (Día)</option>
-                            <option value="Antioqueñita 2 (Tarde)">Antioqueñita 2 (Tarde)</option>
-                            <option value="Paisita Día">Paisita Día</option>
-                            <option value="Paisita Noche">Paisita Noche</option>
-                            <option value="Chontico Día">Chontico Día</option>
-                            <option value="Chontico Noche">Chontico Noche</option>
-                            <option value="Super Chontico Noche">Super Chontico Noche</option>
-                            <option value="Cafeterito Tarde">Cafeterito Tarde</option>
-                            <option value="Cafeterito Noche">Cafeterito Noche</option>
-                            <option value="Dorado Mañana">Dorado Mañana</option>
-                            <option value="Dorado Tarde">Dorado Tarde</option>
-                            <option value="Dorado Noche">Dorado Noche</option>
-                            <option value="Astro Sol">Astro Sol</option>
-                            <option value="Astro Luna">Astro Luna</option>
-                            <option value="Caribeña Día">Caribeña Día</option>
-                            <option value="Caribeña Noche">Caribeña Noche</option>
-                            <option value="Sinuano Día">Sinuano Día</option>
-                            <option value="Sinuano Noche">Sinuano Noche</option>
-                            <option value="Fantástica Día">Fantástica Día</option>
-                            <option value="Fantástica Noche">Fantástica Noche</option>
-                            <option value="Motilón Tarde">Motilón Tarde</option>
-                            <option value="Motilón Noche">Motilón Noche</option>
-                            <option value="Pijao de Oro">Pijao de Oro</option>
-                            <option value="Samán de la Suerte">Samán de la Suerte</option>
-                            <option value="Culona Día">Culona Día</option>
-                            <option value="Culona Noche">Culona Noche</option>
-                            <option value="Pick 3 Día">Pick 3 Día</option>
-                            <option value="Pick 3 Noche">Pick 3 Noche</option>
-                            <option value="Pick 4 Día">Pick 4 Día</option>
-                            <option value="Pick 4 Noche">Pick 4 Noche</option>
-                            <option value="Baloto">Baloto</option>
-                            <option value="Baloto Revancha">Baloto Revancha</option>
-                            <option value="MiLoto">MiLoto</option>
-                            <option value="ColorLoto">ColorLoto</option>
-                            <option value="Placa Millonaria Moto">Placa Millonaria Moto</option>
-                            <option value="Paisa Lotto">Paisa Lotto</option>
-                            <option value="La Perla Día">La Perla Día</option>
-                            <option value="La Perla Noche">La Perla Noche</option>
-                            <option value="Cash Día">Cash Día</option>
-                            <option value="Cash Noche">Cash Noche</option>
-                            <option value="Play Four Día">Play Four Día</option>
-                            <option value="Play Four Noche">Play Four Noche</option>
-                        </select>
-                    </div>
-                    <div class="form-group" style="margin-bottom: 0;">
-                        <label for="adminFechaSorteo">Fecha del Sorteo:</label>
-                        <input type="date" id="adminFechaSorteo" class="form-control">
-                    </div>
-                    <button type="button" class="btn-submit" style="grid-column: 1 / -1; margin-top: 10px;" onclick="guardarConfigSorteo()">💾 Guardar y Publicar Configuración</button>
-                </div>
-            </div>
-
             <div class="admin-table-container">
                 <table class="admin-table">
                     <thead>
@@ -766,8 +803,7 @@
             <button class="btn-volver" onclick="volverAlPortal()" style="margin-top: 10px;">⬅️ Volver al Inicio</button>
             <header>
                 <h1>🎟️ Gran Rifa Exclusiva</h1>
-                <p style="font-weight: 600; color: var(--highlight-text);">📚 Rifa para pagar estudios | Valor: $20.000 | Premio: $1.000.000</p>
-                <!-- NUEVO: MUESTRA LOTERÍA Y FECHA DINÁMICAMENTE -->
+                <p style="font-weight: 600; color: var(--highlight-text);">📚 Rifa para pagar estudios | Valor: $<span id="compradorValor">20.000</span> | Premio: $<span id="compradorPremio">1.000.000</span></p>
                 <p style="font-size: 0.95rem; margin-top: 5px; font-weight: 500;">🎰 Juega con: <strong id="compradorLoteria">Lotería de Medellín</strong> | 📅 Fecha: <strong id="compradorFecha">Por definir</strong></p>
                 <p style="font-size: 0.85rem; margin-top: 3px; color: var(--text-muted);">Selecciona tus números de la suerte abajo</p>
             </header>
@@ -833,7 +869,7 @@
                     </div>
 
                     <div class="form-group" style="grid-column: 1 / -1;">
-                        <label>Opción de Pago ($20.000 COP por puesto) *</label>
+                        <label>Opción de Pago ($<span id="labelPrecioBoleta">20.000</span> COP por puesto) *</label>
                         <div class="radio-group">
                             <label class="radio-label">
                                 <input type="radio" name="pago" value="Inmediato" required checked onchange="toggleCalendario()">
@@ -877,9 +913,14 @@
 
         // ESTADO DE LA APLICACIÓN
         const TOTAL_NUMEROS = 100;
-        const PRECIO_BOLETA = 20000;
+        let PRECIO_BOLETA = 20000;
+        let PREMIO_RIFA = 1000000;
         let seleccionados = [];
         let reservas = [];
+        
+        // --- NUEVO: VARIABLES DINÁMICAS PARA CREDENCIALES DE ADMINISTRADOR ---
+        let ADMIN_USER = "admin";
+        let ADMIN_PASS = "admin123";
 
         // --- GESTIÓN DE MODO OSCURO ---
         function toggleDarkMode() {
@@ -944,11 +985,12 @@
             document.getElementById('modalLogin').style.display = 'none';
         }
 
+        // MODIFICADO: AHORA COMPRUEBA CONTRA LAS CREDENCIALES DINÁMICAS GUARDADAS EN FIREBASE
         function verificarLogin() {
             const user = document.getElementById('adminUser').value;
             const pass = document.getElementById('adminPass').value;
             
-            if(user === 'admin' && pass === 'admin123') {
+            if(user === ADMIN_USER && pass === ADMIN_PASS) {
                 cerrarModalLogin();
                 document.getElementById('portalSection').style.display = 'none';
                 document.getElementById('adminSection').style.display = 'block';
@@ -957,6 +999,55 @@
                 renderizarTablaAdmin();
             } else {
                 document.getElementById('errorLogin').style.display = 'block';
+            }
+        }
+
+        // --- FUNCIONES DE LA VENTANA EMERGENTE DE CONFIGURACIÓN DE RIFA ---
+        function abrirModalConfig() {
+            document.getElementById('modalConfigRifa').style.display = 'flex';
+        }
+
+        function cerrarModalConfig() {
+            document.getElementById('modalConfigRifa').style.display = 'none';
+        }
+
+        // --- NUEVO: FUNCIONES DE LA VENTANA EMERGENTE DE CAMBIO DE CREDENCIALES ---
+        function abrirModalCredenciales() {
+            document.getElementById('nuevoAdminUser').value = ADMIN_USER;
+            document.getElementById('nuevoAdminPass').value = '';
+            document.getElementById('modalCredenciales').style.display = 'flex';
+        }
+
+        function cerrarModalCredenciales() {
+            document.getElementById('modalCredenciales').style.display = 'none';
+        }
+
+        // NUEVO: GUARDAR CREDENCIALES PIDIENDO LA CONTRASEÑA ANTERIOR
+        function guardarCredencialesConSeguridad() {
+            const nuevoUser = document.getElementById('nuevoAdminUser').value.trim();
+            const nuevoPass = document.getElementById('nuevoAdminPass').value.trim();
+
+            if (!nuevoUser || !nuevoPass) {
+                alert("❌ El usuario y la contraseña no pueden estar vacíos.");
+                return;
+            }
+
+            const confirmacionPass = prompt("🔒 Seguridad de Administrador:\nPor favor, ingresa tu CONTRASEÑA ANTERIOR (actual) para autorizar este cambio:");
+            
+            if (confirmacionPass === null) {
+                return;
+            }
+
+            if (confirmacionPass === ADMIN_PASS) {
+                db.ref('credenciales').set({
+                    usuario: nuevoUser,
+                    contrasena: nuevoPass
+                });
+
+                cerrarModalCredenciales();
+                mostrarToast("✔ Credenciales actualizadas en la nube. Úsalas en tu próximo ingreso.");
+            } else {
+                alert("❌ La contraseña anterior es incorrecta. No se realizaron cambios.");
             }
         }
 
@@ -977,7 +1068,6 @@
 
         // 1. ESCUCHAR DATOS Y CONFIGURACIÓN EN TIEMPO REAL DESDE FIREBASE
         function escucharEstadoNube() {
-            // Escuchar cambios en las reservas de números
             const refReservas = db.ref('reservas');
             refReservas.on('value', (snapshot) => {
                 const datos = snapshot.val();
@@ -998,11 +1088,13 @@
                 }
             });
 
-            // NUEVO: Escuchar cambios en la configuración del sorteo (Lotería y Fecha)
             const refConfig = db.ref('config');
             refConfig.on('value', (snapshot) => {
-                const config = snapshot.val() || { loteria: "Lotería de Medellín", fecha: "Por definir" };
-                actualizarTextosSorteo(config.loteria, config.fecha);
+                const config = snapshot.val() || { loteria: "Lotería de Medellín", fecha: "Por definir", valor: 20000, premio: 1000000 };
+                PRECIO_BOLETA = Number(config.valor) || 20000;
+                PREMIO_RIFA = Number(config.premio) || 1000000;
+                
+                actualizarTextosSorteo(config.loteria, config.fecha, PRECIO_BOLETA, PREMIO_RIFA);
                 
                 if(document.getElementById('adminLoteria')) {
                     document.getElementById('adminLoteria').value = config.loteria;
@@ -1010,37 +1102,82 @@
                 if(document.getElementById('adminFechaSorteo')) {
                     document.getElementById('adminFechaSorteo').value = config.fecha === "Por definir" ? "" : config.fecha;
                 }
+                if(document.getElementById('adminValorBoleta')) {
+                    document.getElementById('adminValorBoleta').value = PRECIO_BOLETA;
+                }
+                if(document.getElementById('adminPremioRifa')) {
+                    document.getElementById('adminPremioRifa').value = PREMIO_RIFA;
+                }
+            });
+
+            // NUEVO: ESCUCHAR Y ACTUALIZAR CREDENCIALES EN TIEMPO REAL DESDE FIREBASE
+            const refCredenciales = db.ref('credenciales');
+            refCredenciales.on('value', (snapshot) => {
+                const creds = snapshot.val();
+                if (creds && creds.usuario && creds.contrasena) {
+                    ADMIN_USER = creds.usuario;
+                    ADMIN_PASS = creds.contrasena;
+                } else {
+                    ADMIN_USER = "admin";
+                    ADMIN_PASS = "admin123";
+                }
             });
         }
 
-        // NUEVO: ACTUALIZAR TEXTOS DINÁMICOS EN TODAS LAS PANTALLAS Y EN LAS REGLAS
-        function actualizarTextosSorteo(loteria, fecha) {
+        function actualizarTextosSorteo(loteria, fecha, valor, premio) {
             const textoFecha = fecha && fecha !== "" ? fecha : "Por definir";
             const textoLoteria = loteria || "Lotería de Medellín";
+            const textoValor = Number(valor).toLocaleString('es-CO');
+            const textoPremio = Number(premio).toLocaleString('es-CO');
 
             document.getElementById('portalLoteria').textContent = textoLoteria;
             document.getElementById('portalFecha').textContent = textoFecha;
+            document.getElementById('portalValor').textContent = textoValor;
+            document.getElementById('portalPremio').textContent = textoPremio;
+
             document.getElementById('compradorLoteria').textContent = textoLoteria;
             document.getElementById('compradorFecha').textContent = textoFecha;
+            document.getElementById('compradorValor').textContent = textoValor;
+            document.getElementById('compradorPremio').textContent = textoPremio;
+            document.getElementById('labelPrecioBoleta').textContent = textoValor;
 
             const elemsLoteria = document.querySelectorAll('.text-loteria-dinamica');
             elemsLoteria.forEach(el => el.textContent = textoLoteria);
 
             const elemsFecha = document.querySelectorAll('.text-fecha-dinamica');
             elemsFecha.forEach(el => el.textContent = textoFecha);
+            
+            if (seleccionados.length > 0) {
+                actualizarFormulario();
+            }
         }
 
-        // NUEVO: GUARDAR LA NUEVA LOTERÍA Y FECHA DESDE EL PANEL DE ADMINISTRADOR
-        function guardarConfigSorteo() {
-            const loteria = document.getElementById('adminLoteria').value;
-            const fecha = document.getElementById('adminFechaSorteo').value || "Por definir";
+        // MODIFICADO: AHORA VERIFICA CONTRA LA CONTRASEÑA DINÁMICA GUARDADA EN LA NUBE
+        function guardarConfigSorteoConSeguridad() {
+            const confirmacionPass = prompt("🔒 Seguridad de Administrador:\nPor favor, ingresa tu contraseña de administrador para guardar los cambios de configuración:");
+            
+            if (confirmacionPass === null) {
+                return;
+            }
 
-            db.ref('config').set({
-                loteria: loteria,
-                fecha: fecha
-            });
+            if (confirmacionPass === ADMIN_PASS) {
+                const loteria = document.getElementById('adminLoteria').value;
+                const fecha = document.getElementById('adminFechaSorteo').value || "Por definir";
+                const valor = document.getElementById('adminValorBoleta').value || 20000;
+                const premio = document.getElementById('adminPremioRifa').value || 1000000;
 
-            mostrarToast("✔ Configuración del sorteo actualizada en tiempo real.");
+                db.ref('config').set({
+                    loteria: loteria,
+                    fecha: fecha,
+                    valor: Number(valor),
+                    premio: Number(premio)
+                });
+
+                cerrarModalConfig();
+                mostrarToast("✔ Configuración del sorteo actualizada en tiempo real.");
+            } else {
+                alert("❌ Contraseña incorrecta. Los cambios no se han guardado.");
+            }
         }
 
         // 2. GENERAR LA CUADRÍCULA DE NÚMEROS
@@ -1220,6 +1357,7 @@
             mostrarToast("Pago validado en la nube.");
         }
 
+        // MODIFICADO: AHORA COMPRUEBA CONTRA LA CONTRASEÑA DINÁMICA GUARDADA EN FIREBASE
         function deshacerPagoConSeguridad(idFirebase, pagoAnterior) {
             const confirmacionPass = prompt("🔒 Seguridad de Administrador:\nPor favor, ingresa tu contraseña para deshacer este pago:");
             
@@ -1227,7 +1365,7 @@
                 return;
             }
 
-            if (confirmacionPass === 'admin123') {
+            if (confirmacionPass === ADMIN_PASS) {
                 db.ref('reservas/' + idFirebase).update({
                     estado: 'parcial',
                     pago: pagoAnterior
