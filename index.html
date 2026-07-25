@@ -194,7 +194,6 @@
             color: var(--text-main);
         }
 
-        /* --- NUEVO: ESTILOS PARA LA VENTANA DE REGLAS --- */
         .modal-reglas-content {
             background: var(--bg-card);
             padding: 25px;
@@ -563,6 +562,10 @@
             font-weight: 600;
         }
     </style>
+
+    <!-- --- NUEVO: IMPORTACIÓN DE LIBRERÍAS DE FIREBASE --- -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 </head>
 <body>
 
@@ -598,7 +601,7 @@
             </div>
         </section>
 
-        <!-- --- NUEVO: MODAL PARA REGLAS DE LA RIFA --- -->
+        <!-- --- MODAL PARA REGLAS DE LA RIFA --- -->
         <div class="modal-login" id="modalReglas">
             <div class="modal-reglas-content">
                 <h3 style="color: var(--highlight-text); text-align: center; margin-bottom: 5px;">📜 REGLAS DE LA RIFA</h3>
@@ -779,6 +782,20 @@
     <div class="toast" id="toast">¡Números apartados con éxito!</div>
 
     <script>
+        // --- CONFIGURACIÓN E INICIALIZACIÓN DE FIREBASE EN TIEMPO REAL ---
+        const firebaseConfig = {
+            apiKey: "AIzaSyBRWPM8JlZqeBRtZl_Rf6r3b8H5y_3ziXg",
+            authDomain: "rifa-562ba.firebaseapp.com",
+            databaseURL: "https://rifa-562ba-default-rtdb.firebaseio.com",
+            projectId: "rifa-562ba",
+            storageBucket: "rifa-562ba.firebasestorage.app",
+            messagingSenderId: "440835565536",
+            appId: "1:440835565536:web:63f8d97df17bf203c6ed85"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
         // ESTADO DE LA APLICACIÓN
         const TOTAL_NUMEROS = 100;
         const PRECIO_BOLETA = 20000;
@@ -802,15 +819,13 @@
             }
         }
 
-        // --- NAVEGACIÓN Y ACCESO (MODIFICADO: AHORA SIEMPRE ABRE LAS REGLAS PRIMERO) ---
+        // --- NAVEGACIÓN Y ACCESO ---
         function ingresarComoComprador() {
-            // Reiniciamos la casilla para que esté sin marcar SIEMPRE que intente entrar
             document.getElementById('checkReglas').checked = false;
             document.getElementById('errorReglas').style.display = 'none';
             document.getElementById('modalReglas').style.display = 'flex';
         }
 
-        // NUEVO: VALIDA QUE HAYA MARCADO LA CASILLA ANTES DE ENTRAR
         function validarReglas() {
             const aceptado = document.getElementById('checkReglas').checked;
             if (aceptado) {
@@ -823,7 +838,6 @@
             }
         }
 
-        // NUEVO: SI DA EN NO ACEPTO, LO REGRESA AL INICIO
         function rechazarReglas() {
             document.getElementById('modalReglas').style.display = 'none';
         }
@@ -882,22 +896,31 @@
             }
         }
 
-        // 1. INICIALIZACIÓN DE DATOS
-        function cargarEstado() {
-            const guardados = localStorage.getItem('rifa_reservas_completas');
-            if (guardados) {
-                reservas = JSON.parse(guardados);
-            } else {
-                reservas = [
-                    { id: Date.now()+1, cliente: 'CARLOS MENDOZA', whatsapp: '3001112233', ciudad: 'Bogotá', direccion: 'Calle 10 # 5-20', numeros: [7, 13], pago: 'Inmediato (Transferencia o Efectivo)', total: '$40.000 COP', fechaPago: 'N/A', estado: 'parcial' },
-                    { id: Date.now()+2, cliente: 'ANA GÓMEZ', whatsapp: '3104445566', ciudad: 'Medellín', direccion: 'Cra 43 # 12-8', numeros: [22, 45], pago: 'Aplazado', total: '$40.000 COP', fechaPago: '2026-08-01', estado: 'parcial' }
-                ];
-                guardarEstado();
-            }
-        }
-
-        function guardarEstado() {
-            localStorage.setItem('rifa_reservas_completas', JSON.stringify(reservas));
+        // 1. MODIFICADO: ESCUCHAR DATOS EN TIEMPO REAL DESDE LA NUBE FIREBASE
+        function escucharEstadoNube() {
+            const refReservas = db.ref('reservas');
+            
+            // Esta función se dispara automáticamente en TODOS los teléfonos del mundo en el milisegundo en que la base de datos cambia
+            refReservas.on('value', (snapshot) => {
+                const datos = snapshot.val();
+                if (datos) {
+                    // Convertimos el objeto de Firebase en nuestro arreglo normal
+                    reservas = Object.keys(datos).map(key => ({
+                        idFirebase: key,
+                        ...datos[key]
+                    }));
+                } else {
+                    reservas = [];
+                }
+                
+                // Si la persona está en la cuadrícula o el admin en la tabla, se actualizan solas al instante
+                if (document.getElementById('compradorSection').style.display === 'block') {
+                    renderizarCuadricula();
+                }
+                if (document.getElementById('adminSection').style.display === 'block') {
+                    renderizarTablaAdmin();
+                }
+            });
         }
 
         // 2. GENERAR LA CUADRÍCULA DE NÚMEROS
@@ -909,8 +932,8 @@
             let numParciales = [];
 
             reservas.forEach(r => {
-                if(r.estado === 'pagado') numPagados.push(...r.numeros);
-                if(r.estado === 'parcial') numParciales.push(...r.numeros);
+                if(r.estado === 'pagado') numPagados.push(...(r.numeros || []));
+                if(r.estado === 'parcial') numParciales.push(...(r.numeros || []));
             });
 
             for (let i = 1; i <= TOTAL_NUMEROS; i++) {
@@ -927,6 +950,11 @@
                     btn.title = "Número con bloqueo parcial (Pago aplazado)";
                 } else {
                     btn.onclick = () => alternarSeleccion(i, btn);
+                }
+
+                // Mantener seleccionado visualmente si la persona aún está en el formulario y la grilla se actualiza por otro usuario
+                if (seleccionados.includes(i)) {
+                    btn.classList.add('selected');
                 }
 
                 grid.appendChild(btn);
@@ -973,7 +1001,7 @@
             }
         }
 
-        // 5. PROCESAR LA RESERVA
+        // 5. MODIFICADO: PROCESAR LA RESERVA Y ENVIARLA A FIREBASE
         function procesarReserva(e) {
             e.preventDefault();
 
@@ -1002,10 +1030,10 @@
                 estado: 'parcial'
             };
 
-            reservas.push(nuevoRegistro);
-            guardarEstado();
+            // GUARDA EN LA NUBE FIREBASE INSTANTÁNEAMENTE
+            db.ref('reservas').push(nuevoRegistro);
 
-            mostrarToast("¡Reserva enviada! El administrador validará tu solicitud.");
+            mostrarToast("¡Reserva enviada y bloqueada en tiempo real!");
 
             const numsTexto = seleccionados.map(n => n < 10 ? `0${n}` : n).join(', ');
             let textoFecha = fechaPago !== 'N/A' ? `\n*Fecha programada de pago:* ${fechaPago}` : '';
@@ -1014,12 +1042,11 @@
             const urlWhatsApp = `https://api.whatsapp.com/send?phone=573126186048&text=${encodeURIComponent(mensaje)}`;
             
             limpiarPantallaComprador();
-            renderizarCuadricula();
 
             setTimeout(() => { window.open(urlWhatsApp, '_blank'); }, 1500);
         }
 
-        // --- FUNCIONES DEL PANEL DEL ADMINISTRADOR ---
+        // --- FUNCIONES DEL PANEL DEL ADMINISTRADOR (MODIFICADO PARA ACTUALIZAR EN LA NUBE) ---
         function renderizarTablaAdmin() {
             const tbody = document.getElementById('tablaAdmin');
             tbody.innerHTML = '';
@@ -1033,7 +1060,7 @@
 
             reservasInvertidas.forEach(r => {
                 const tr = document.createElement('tr');
-                const numsFormat = r.numeros.map(n => n < 10 ? `0${n}` : n).join(', ');
+                const numsFormat = (r.numeros || []).map(n => n < 10 ? `0${n}` : n).join(', ');
                 
                 let badge = `<span class="badge badge-parcial">Bloqueo Parcial</span>`;
                 let infoPago = `<strong>${r.pago}</strong>`;
@@ -1042,15 +1069,15 @@
                 }
 
                 let actions = `
-                    <button class="btn-action btn-aprobar" onclick="validarPagoAdmin(${r.id})" title="Confirmar el dinero">✔ Validar Pago</button>
-                    <button class="btn-action btn-parcial" onclick="cambiarEstadoAdmin(${r.id}, 'parcial')" title="Dejar en bloqueo parcial">⏳ Bloqueo Parcial</button>
-                    <button class="btn-action btn-liberar" onclick="eliminarReservaAdmin(${r.id})" title="Eliminar y liberar números">✖ Liberar</button>
+                    <button class="btn-action btn-aprobar" onclick="validarPagoAdmin('${r.idFirebase}', '${r.pago}')" title="Confirmar el dinero">✔ Validar Pago</button>
+                    <button class="btn-action btn-parcial" onclick="cambiarEstadoAdmin('${r.idFirebase}', 'parcial')" title="Dejar en bloqueo parcial">⏳ Bloqueo Parcial</button>
+                    <button class="btn-action btn-liberar" onclick="eliminarReservaAdmin('${r.idFirebase}')" title="Eliminar y liberar números">✖ Liberar</button>
                 `;
 
                 if(r.estado === 'pagado') {
                     badge = `<span class="badge badge-pagado">Inhabilitado / Pagado</span>`;
                     infoPago = `<span style="color: var(--success); font-weight: bold;">✔ Pagado</span>`;
-                    actions = `<button class="btn-action btn-deshacer" onclick="deshacerPagoConSeguridad(${r.id})" title="Pide contraseña para volver a pendiente">🔒 Deshacer pago</button>`;
+                    actions = `<button class="btn-action btn-deshacer" onclick="deshacerPagoConSeguridad('${r.idFirebase}', '${r.pagoGuardado || 'Aplazado'}')" title="Pide contraseña para volver a pendiente">🔒 Deshacer pago</button>`;
                 }
 
                 tr.innerHTML = `
@@ -1066,19 +1093,16 @@
             });
         }
 
-        function validarPagoAdmin(id) {
-            const index = reservas.findIndex(r => r.id === id);
-            if(index !== -1) {
-                reservas[index].estado = 'pagado';
-                reservas[index].pagoGuardado = reservas[index].pago;
-                reservas[index].pago = 'Pagado';
-                guardarEstado();
-                renderizarTablaAdmin();
-                mostrarToast("Pago validado. Números inhabilitados permanentemente.");
-            }
+        function validarPagoAdmin(idFirebase, pagoActual) {
+            db.ref('reservas/' + idFirebase).update({
+                estado: 'pagado',
+                pagoGuardado: pagoActual,
+                pago: 'Pagado'
+            });
+            mostrarToast("Pago validado en la nube.");
         }
 
-        function deshacerPagoConSeguridad(id) {
+        function deshacerPagoConSeguridad(idFirebase, pagoAnterior) {
             const confirmacionPass = prompt("🔒 Seguridad de Administrador:\nPor favor, ingresa tu contraseña para deshacer este pago:");
             
             if (confirmacionPass === null) {
@@ -1086,34 +1110,26 @@
             }
 
             if (confirmacionPass === 'admin123') {
-                const index = reservas.findIndex(r => r.id === id);
-                if(index !== -1) {
-                    reservas[index].estado = 'parcial';
-                    reservas[index].pago = reservas[index].pagoGuardado || 'Aplazado';
-                    guardarEstado();
-                    renderizarTablaAdmin();
-                    mostrarToast("✔ Pago deshecho correctamente.");
-                }
+                db.ref('reservas/' + idFirebase).update({
+                    estado: 'parcial',
+                    pago: pagoAnterior
+                });
+                mostrarToast("✔ Pago deshecho en la nube.");
             } else {
                 alert("❌ Contraseña incorrecta. El pago no fue modificado para proteger la reserva.");
             }
         }
 
-        function cambiarEstadoAdmin(id, nuevoEstado) {
-            const index = reservas.findIndex(r => r.id === id);
-            if(index !== -1) {
-                reservas[index].estado = nuevoEstado;
-                guardarEstado();
-                renderizarTablaAdmin();
-                mostrarToast("Estado actualizado correctamente.");
-            }
+        function cambiarEstadoAdmin(idFirebase, nuevoEstado) {
+            db.ref('reservas/' + idFirebase).update({
+                estado: nuevoEstado
+            });
+            mostrarToast("Estado actualizado.");
         }
 
-        function eliminarReservaAdmin(id) {
-            if(confirm("¿Estás seguro de liberar estos números? Volverán a estar disponibles para compra.")) {
-                reservas = reservas.filter(r => r.id !== id);
-                guardarEstado();
-                renderizarTablaAdmin();
+        function eliminarReservaAdmin(idFirebase) {
+            if(confirm("¿Estás seguro de liberar estos números en la nube? Volverán a estar disponibles para compra de inmediato.")) {
+                db.ref('reservas/' + idFirebase).remove();
                 mostrarToast("Números liberados con éxito.");
             }
         }
@@ -1130,8 +1146,8 @@
 
         // INICIAR AL CARGAR LA PÁGINA
         window.onload = () => {
-            cargarEstado();
             cargarModoOscuro();
+            escucharEstadoNube(); // Inicia el radar en vivo de Firebase
         };
     </script>
 </body>
